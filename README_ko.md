@@ -177,6 +177,10 @@ type ParsedUrlQuery = Map[String, String | Seq[String]] // { [key: string]: stri
 7. **`Nothing`이 match type의 검사 대상(scrutinee)이 되면 환원되지 않는다.** 모든 case에 매치되기 때문이다.
    그래서 TS의 `as never`(필드 제거)는 `Skip` 마커로 표현한다 ("Mapped type 읽는 법" 참고).
 
+## 라이선스
+
+MIT — [LICENSE](LICENSE) 참고.
+
 ## 레이아웃
 
 ```

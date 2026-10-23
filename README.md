@@ -179,6 +179,10 @@ type ParsedUrlQuery = Map[String, String | Seq[String]] // { [key: string]: stri
 7. **A match type whose scrutinee is `Nothing` does not reduce**, because `Nothing` matches every case.
    TS's `as never` (dropping a field) is therefore expressed with the `Skip` marker (see "Reading a mapped type").
 
+## License
+
+MIT — see [LICENSE](LICENSE).
+
 ## Layout
 
 ```
