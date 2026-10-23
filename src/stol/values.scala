@@ -33,9 +33,21 @@ extension [T <: AnyNamedTuple](t: T)
     fillMerge[keysOf[T], keysOf[U], Names[T Merge U]](product(t), product(u), arr, 0)
     Tuple.fromArray(arr).asInstanceOf[T Merge U]
 
+/** The same operations directly on case classes (no `toNamedTuple` needed). Named tuples are not
+ *  `Product`s, so this never overlaps with the block above; results are always named tuples. */
 extension [P <: Product](p: P)(using m: Mirror.ProductOf[P])
-  /** Case class → named tuple, after which every operator above applies. */
+  /** Case class → named tuple. */
   inline def toNamedTuple: From[P] = Tuple.fromProductTyped(p).asInstanceOf[From[P]]
+  inline def pick[K <: String]: Pick[P, K] = select[P, Pick[P, K]](p)
+  inline def omit[K <: String]: Omit[P, K] = select[P, Omit[P, K]](p)
+  inline def field[K]: P Field K =
+    p.productElement(constValue[IndexOf[keysOf[P], K, 0]]).asInstanceOf[P Field K]
+  inline def keys: List[String] = constValueTuple[keysOf[P]].toList.asInstanceOf[List[String]]
+  inline def partial: Partial[P] = mapAll[Tuple.Size[keysOf[P]]](p, Some(_)).asInstanceOf[Partial[P]]
+  inline def merge[U <: AnyNamedTuple](u: U): P Merge U =
+    val arr = new Array[Object](constValue[Tuple.Size[Names[P Merge U]]])
+    fillMerge[keysOf[P], keysOf[U], Names[P Merge U]](p, product(u), arr, 0)
+    Tuple.fromArray(arr).asInstanceOf[P Merge U]
 
 // --- internals --------------------------------------------------------------
 

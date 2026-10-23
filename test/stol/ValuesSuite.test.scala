@@ -38,3 +38,18 @@ class ValuesSuite extends munit.FunSuite:
   test("destructuring the result"):
     val (name = n, age = a) = nt.pick["name" | "age"]
     assertEquals((n, a), ("kim", 30))
+
+  test("operations directly on a case class"):
+    val slim: (name: String, age: Int) = kim.pick["name" | "age"]
+    assertEquals(slim, (name = "kim", age = 30))
+    val noEmail: (name: String, age: Int) = kim.omit["email"]
+    assertEquals(noEmail, slim)
+    val age: Int = kim.field["age"]
+    assertEquals(age, 30)
+    assertEquals(kim.keys, List("name", "age", "email"))
+    val p: (name: Option[String], age: Option[Int], email: Option[String]) = kim.partial
+    assertEquals(p.name, Some("kim"))
+    val m: (name: String, age: Int, email: String, id: Long) = kim.merge((id = 7L))
+    assertEquals(m.id, 7L)
+    val (name = n, age = a) = kim.pick["name" | "age"]
+    assertEquals((n, a), ("kim", 30))

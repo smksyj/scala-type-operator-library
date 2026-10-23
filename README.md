@@ -16,8 +16,8 @@ type Age  = Person Field "age"               // Int
 type Slim = Pick[Person, "name" | "age"]     // (name: String, age: Int)
 type Edit = Partial[Omit[Person, "email"]]   // (name: Option[String], age: Option[Int])
 
-val p = Person("kim", 30, "kim@x.io").toNamedTuple
-val slim: Slim = p.pick["name" | "age"]      // the value level mirrors the type level
+val kim = Person("kim", 30, "kim@x.io")
+val slim: Slim = kim.pick["name" | "age"]    // the value level mirrors the type level
 val (name = n, age = a) = slim               // destructuring
 ```
 
@@ -140,14 +140,14 @@ For why it is `Skip` rather than `never`, see limitation 7 below.
 
 Named tuples exist at runtime, so every object operator has a value-level twin with the same name.
 The result type is computed by the type operator, and field positions are resolved at compile time,
-so there is no name lookup at runtime.
+so there is no name lookup at runtime. They work on named tuples and directly on case classes.
 
 | Value operation | Type |
 |---|---|
-| `caseClass.toNamedTuple` | `From[P]` |
+| `caseClass.toNamedTuple` | `From[P]` (rarely needed: the operations below accept case classes too) |
 | `t.pick["a" \| "b"]`, `t.omit["a"]` | `Pick[T, K]`, `Omit[T, K]` |
 | `t.field["a"]`, `t.keys` | `T Field "a"`, `List[String]` |
-| `t.partial`, `t.required` | `Partial[T]`, `Required[T]` |
+| `t.partial`, `t.required` | `Partial[T]`, `Required[T]` (`required` is for named tuples) |
 | `t.merge(u)` | `T Merge U` |
 
 ## `Record<string, V>` is out of scope

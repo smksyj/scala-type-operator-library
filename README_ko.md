@@ -16,8 +16,8 @@ type Age  = Person Field "age"               // Int
 type Slim = Pick[Person, "name" | "age"]     // (name: String, age: Int)
 type Edit = Partial[Omit[Person, "email"]]   // (name: Option[String], age: Option[Int])
 
-val p = Person("kim", 30, "kim@x.io").toNamedTuple
-val slim: Slim = p.pick["name" | "age"]      // 값 레벨도 같은 모양
+val kim = Person("kim", 30, "kim@x.io")
+val slim: Slim = kim.pick["name" | "age"]    // 값 레벨도 같은 모양
 val (name = n, age = a) = slim               // destructuring
 ```
 
@@ -140,13 +140,14 @@ type StringFields[T] = Mapped[T, [K] =>> (T Field K) match
 
 named tuple은 런타임에도 존재하므로 object 연산자마다 같은 이름의 값 연산이 있다.
 결과 타입은 타입 연산자가 계산하고, 필드 위치는 컴파일 타임에 결정되므로 런타임 이름 탐색은 없다.
+named tuple과 case class 모두에 바로 쓸 수 있다.
 
 | 값 연산 | 타입 |
 |---|---|
-| `caseClass.toNamedTuple` | `From[P]` |
+| `caseClass.toNamedTuple` | `From[P]` (아래 연산은 case class에도 바로 되므로 거의 필요 없음) |
 | `t.pick["a" \| "b"]`, `t.omit["a"]` | `Pick[T, K]`, `Omit[T, K]` |
 | `t.field["a"]`, `t.keys` | `T Field "a"`, `List[String]` |
-| `t.partial`, `t.required` | `Partial[T]`, `Required[T]` |
+| `t.partial`, `t.required` | `Partial[T]`, `Required[T]` (`required`는 named tuple용) |
 | `t.merge(u)` | `T Merge U` |
 
 ## `Record<string, V>` 는 범위 밖
