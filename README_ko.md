@@ -21,6 +21,13 @@ val slim: Slim = p.pick["name" | "age"]      // 값 레벨도 같은 모양
 val (name = n, age = a) = slim               // destructuring
 ```
 
+## 설치
+
+```scala
+//> using dep io.github.smksyj::stol:0.1.0                        // scala-cli
+libraryDependencies += "io.github.smksyj" %% "stol" % "0.1.0"    // sbt
+```
+
 ## 요구 사항
 
 - Scala **3.7 이상** (Named Tuple이 stable이 된 버전)

@@ -21,6 +21,13 @@ val slim: Slim = p.pick["name" | "age"]      // the value level mirrors the type
 val (name = n, age = a) = slim               // destructuring
 ```
 
+## Installation
+
+```scala
+//> using dep io.github.smksyj::stol:0.1.0                        // scala-cli
+libraryDependencies += "io.github.smksyj" %% "stol" % "0.1.0"    // sbt
+```
+
 ## Requirements
 
 - Scala **3.7 or later** (the version in which named tuples became stable)
