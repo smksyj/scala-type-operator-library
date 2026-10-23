@@ -24,14 +24,33 @@ val (name = n, age = a) = slim               // destructuring
 ## Installation
 
 ```scala
-//> using dep io.github.smksyj::stol:0.1.0                        // scala-cli
-libraryDependencies += "io.github.smksyj" %% "stol" % "0.1.0"    // sbt
+//> using dep io.github.smksyj::stol:0.1.1                        // scala-cli
+libraryDependencies += "io.github.smksyj" %% "stol" % "0.1.1"    // sbt
 ```
 
 ## Requirements
 
 - Scala **3.7 or later** (the version in which named tuples became stable)
 - Build/test: [scala-cli](https://scala-cli.virtuslab.org) — `scala-cli test .`
+
+## Supported types
+
+stol operates on types whose fields form a fixed, known list:
+
+| Type | Supported |
+|---|---|
+| case class | ✓ |
+| named tuple `(name: String, age: Int)` | ✓ |
+| enum case with parameters (`Shape.Rect(w, h)`) | ✓ |
+| plain tuple `(String, Int)` | keys are `"_1"`, `"_2"` |
+| plain `class`, `trait`, Java class | ✗ |
+| sealed trait / whole `enum` | ✗ (a choice between cases, not a list of fields) |
+| refinement `{ val name: String }` | ✗ |
+
+TS `type { ... }` aliases and data-holding `interface`s map to named tuples and case classes, so they are covered.
+A TS `interface` with behaviour (a Scala `trait`) or a TS `class` is not: Scala exposes field structure at the type
+level only for case classes and named tuples, and match types cannot read the members of other types.
+To use stol with such a value, copy the fields you need into a named tuple: `(name = obj.name, age = obj.age)`.
 
 ## TS ↔ stol mapping
 
@@ -173,8 +192,8 @@ type ParsedUrlQuery = Map[String, String | Seq[String]] // { [key: string]: stri
    distribute; in Scala `(A | B) match { case B => ... }` does not reduce. `Exclude`/`Extract`/`Record` therefore
    take **tuples**. For the common case of filtering `keyof` results, use `keysOf[T]` instead:
    `Pick[T, ExcludeU[keysOf[T], "id"]]`.
-2. **Refinement types `{ val name: String }` are not accepted as input.** `NamedTuple.From` does not support them;
-   use a case class or a named tuple.
+2. **Only case classes, named tuples and parameterised enum cases are accepted** (see "Supported types").
+   Plain classes, traits and refinement types `{ val name: String }` have no field list visible to match types.
 3. **Function types cannot be dispatched on arity.** `FunctionN` are traits, so the compiler cannot prove a
    `Function2` scrutinee disjoint from a `Function0` pattern. `ReturnType` is therefore for `Function1`;
    use `Fn[F]` for other arities.

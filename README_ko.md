@@ -24,14 +24,33 @@ val (name = n, age = a) = slim               // destructuring
 ## 설치
 
 ```scala
-//> using dep io.github.smksyj::stol:0.1.0                        // scala-cli
-libraryDependencies += "io.github.smksyj" %% "stol" % "0.1.0"    // sbt
+//> using dep io.github.smksyj::stol:0.1.1                        // scala-cli
+libraryDependencies += "io.github.smksyj" %% "stol" % "0.1.1"    // sbt
 ```
 
 ## 요구 사항
 
 - Scala **3.7 이상** (Named Tuple이 stable이 된 버전)
 - 빌드/테스트: [scala-cli](https://scala-cli.virtuslab.org) — `scala-cli test .`
+
+## 지원 대상
+
+stol은 필드 목록이 고정된 타입에만 동작한다.
+
+| 타입 | 지원 |
+|---|---|
+| case class | ✓ |
+| named tuple `(name: String, age: Int)` | ✓ |
+| 파라미터 있는 enum case (`Shape.Rect(w, h)`) | ✓ |
+| 일반 튜플 `(String, Int)` | 키가 `"_1"`, `"_2"` |
+| 일반 `class`, `trait`, Java 클래스 | ✗ |
+| sealed trait / `enum` 전체 | ✗ (필드 목록이 아니라 여러 경우 중 하나) |
+| refinement `{ val name: String }` | ✗ |
+
+TS의 `type { ... }`과 데이터를 담는 `interface`는 named tuple과 case class로 옮기면 되므로 지원된다.
+메서드가 있는 `interface`(Scala `trait`)나 TS `class`는 지원되지 않는다. Scala는 case class와 named tuple의
+필드 구조만 타입 레벨에 노출하고, match type은 다른 타입의 멤버를 읽을 수 없다.
+그런 값에 stol을 쓰려면 필요한 필드를 named tuple로 옮긴다: `(name = obj.name, age = obj.age)`.
 
 ## TS ↔ stol 대응표
 
@@ -173,8 +192,8 @@ type ParsedUrlQuery = Map[String, String | Seq[String]] // { [key: string]: stri
    Scala에서 `(A | B) match { case B => ... }`는 환원되지 않는다. 그래서 `Exclude`/`Extract`/`Record`는
    **튜플**을 받는다. `keyof` 결과에 쓰는 흔한 경우는 `keysOf[T]`로 대체하면 된다:
    `Pick[T, ExcludeU[keysOf[T], "id"]]`.
-2. **refinement 타입 `{ val name: String }`은 입력으로 받을 수 없다.** `NamedTuple.From`이 지원하지 않는다.
-   case class 또는 named tuple을 쓴다.
+2. **case class, named tuple, 파라미터 있는 enum case만 받는다** ("지원 대상" 참고).
+   일반 class, trait, refinement 타입 `{ val name: String }`은 match type이 볼 수 있는 필드 목록이 없다.
 3. **함수 타입의 arity 분기가 안 된다.** `FunctionN`은 trait라 `Function0` 패턴과 `Function2` scrutinee의
    disjoint를 컴파일러가 증명하지 못한다. 그래서 `ReturnType`은 `Function1`용이고, 다중 arity는 `Fn[F]`를 쓴다.
 4. **`Awaited[T]`에서 `T`가 `final`이 아닌 클래스면 환원되지 않는다** (3과 같은 이유). `final case class`는 된다.
