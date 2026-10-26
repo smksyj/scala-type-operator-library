@@ -24,6 +24,18 @@ class ObjectsSuite extends munit.FunSuite:
     summon[Omit[Person, "name" | "email"] =:= (age: Int)]
     summon[Omit[Person, keyof[Person]] =:= NamedTuple.NamedTuple[EmptyTuple, EmptyTuple]]
 
+  test("Pick / Omit reject unknown keys"):
+    assert(typeCheckErrors("""val x: Pick[Person, "nmae"] = (nmae = "kim")""").nonEmpty)
+    assert(typeCheckErrors("""val x: Pick[Person, "name" | "nmae"] = (name = "kim")""").nonEmpty)
+    assert(typeCheckErrors("""val x: Omit[Person, "emial"] = (name = "kim", age = 1, email = "e")""").nonEmpty)
+
+  test("Pick / Omit in generic aliases"):
+    type WithoutId[T] = Pick[T, ExcludeU[keysOf[T], "id"]]
+    type DropId[T] = Omit[T, "id"]
+    case class Row(id: Long, v: Int)
+    summon[WithoutId[Row] =:= (v: Int)]
+    summon[DropId[Row] =:= (v: Int)]
+
   test("Partial / Required / Readonly"):
     summon[Partial[Person] =:= (name: Option[String], age: Option[Int], email: Option[String])]
     summon[Required[Partial[Person]] =:= PersonNT]

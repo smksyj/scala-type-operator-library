@@ -64,8 +64,8 @@ A TS object type corresponds to a Scala **named tuple**. The input `T` may be a 
 | `keyof T` | `keyof[T]` | Scala has no prefix type operators, hence `[ ]` |
 | — | `keysOf[T]`, `valuesOf[T]` | keys / values as tuples, for composing with `Record`, `Exclude`, ... |
 | `T["k"]` | `T Field "k"` | `infix type` |
-| `Pick<T, K>` | `Pick[T, K]` | `K` is a union of literals |
-| `Omit<T, K>` | `Omit[T, K]` | |
+| `Pick<T, K>` | `Pick[T, K]` | `K` is a union of literals; an unknown key is a compile error |
+| `Omit<T, K>` | `Omit[T, K]` | an unknown key is a compile error (TS allows it) |
 | `Partial<T>` | `Partial[T]` | wraps every value in `Option` |
 | `Required<T>` | `Required[T]` | unwraps `Option` |
 | `Readonly<T>` | `Readonly[T]` | named tuples are already immutable → identity |

@@ -30,10 +30,10 @@ type valuesOf[T] = DropNames[From[T]]
 infix type Field[T, K] = Tuple.Elem[valuesOf[T], IndexOf[keysOf[T], K, 0]]
 
 /** TS `Pick<T, K>`.  `Pick[Person, "name" | "age"]  =:=  (name: String, age: Int)` */
-type Pick[T, K <: String] = FromPairs[FilterPairs[keysOf[T], valuesOf[T], K, true]]
+type Pick[T, K] = KnownKeys[T, K, FromPairs[FilterPairs[keysOf[T], valuesOf[T], K, true]]]
 
-/** TS `Omit<T, K>`.  `Omit[Person, "email"]` */
-type Omit[T, K <: String] = FromPairs[FilterPairs[keysOf[T], valuesOf[T], K, false]]
+/** TS `Omit<T, K>`.  `Omit[Person, "email"]`  Unlike TS, an unknown key is an error here as well. */
+type Omit[T, K] = KnownKeys[T, K, FromPairs[FilterPairs[keysOf[T], valuesOf[T], K, false]]]
 
 /** TS `Partial<T>`: every value wrapped in `Option`. */
 type Partial[T] = MapValues[T, Option]
@@ -81,6 +81,14 @@ type MapKeys[T, F[_] <: String] = NamedTuple[MapNames[keysOf[T], F], valuesOf[T]
 infix type Merge[A, B] = FromPairs[MergePairs[Pairs[keysOf[A], valuesOf[A]], Pairs[keysOf[B], valuesOf[B]]]]
 
 // --- internals --------------------------------------------------------------
+
+/** `R` when every key in `K` is a field of `T`. A misspelt key leaves this unreduced, which is a
+ *  compile error wherever the type is used. Checked at reduction rather than as a `K <: keyof[T]`
+ *  bound, so generic aliases such as `Pick[T, ExcludeU[keysOf[T], "id"]]` still type-check. */
+type KnownKeys[T, K, R] = Ensure[K, Tuple.Union[keysOf[T]], R]
+
+type Ensure[K, U, R] = K match
+  case U => R
 
 type Unopt[X] = X match
   case Option[a] => a

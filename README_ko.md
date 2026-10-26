@@ -64,8 +64,8 @@ TS의 object type은 Scala **named tuple**에 대응한다. 입력 `T`에는 cas
 | `keyof T` | `keyof[T]` | 전위 타입 연산자가 없어 `[ ]` 사용 |
 | — | `keysOf[T]`, `valuesOf[T]` | 키/값을 튜플로. `Record`, `Exclude` 등과 조합용 |
 | `T["k"]` | `T Field "k"` | `infix type` |
-| `Pick<T, K>` | `Pick[T, K]` | K는 리터럴 union |
-| `Omit<T, K>` | `Omit[T, K]` | |
+| `Pick<T, K>` | `Pick[T, K]` | K는 리터럴 union. 없는 키는 컴파일 에러 |
+| `Omit<T, K>` | `Omit[T, K]` | 없는 키는 컴파일 에러 (TS는 허용) |
 | `Partial<T>` | `Partial[T]` | 값을 `Option`으로 감쌈 |
 | `Required<T>` | `Required[T]` | `Option` 벗김 |
 | `Readonly<T>` | `Readonly[T]` | named tuple은 이미 불변 → 항등 |

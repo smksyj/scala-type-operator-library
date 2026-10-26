@@ -1,5 +1,7 @@
 package stol
 
+import scala.compiletime.testing.typeCheckErrors
+
 class ValuesSuite extends munit.FunSuite:
   case class Person(name: String, age: Int, email: String)
   val kim = Person("kim", 30, "kim@x.io")
@@ -15,8 +17,12 @@ class ValuesSuite extends munit.FunSuite:
     val noEmail: (name: String, age: Int) = nt.omit["email"]
     assertEquals(noEmail, slim)
     // Declaration order is kept regardless of the order of K, as in TS.
-    val chained: (name: String, email: String) = nt.pick["email" | "name"].omit["age"]
-    assertEquals(chained.email, "kim@x.io")
+    val chained: (name: String) = nt.pick["email" | "name"].omit["email"]
+    assertEquals(chained.name, "kim")
+
+  test("pick / omit reject unknown keys"):
+    assert(typeCheckErrors("""nt.pick["nmae"]""").nonEmpty)
+    assert(typeCheckErrors("""kim.omit["emial"]""").nonEmpty)
 
   test("field / keys"):
     val age: Int = nt.field["age"]
