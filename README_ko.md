@@ -24,8 +24,8 @@ val (name = n, age = a) = slim               // destructuring
 ## 설치
 
 ```scala
-//> using dep io.github.smksyj::stol:0.1.1                        // scala-cli
-libraryDependencies += "io.github.smksyj" %% "stol" % "0.1.1"    // sbt
+//> using dep io.github.smksyj::stol:0.2.0                        // scala-cli
+libraryDependencies += "io.github.smksyj" %% "stol" % "0.2.0"    // sbt
 ```
 
 ## 요구 사항
